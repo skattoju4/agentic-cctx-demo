@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "ingestion-chart.fullname" . }}
+  name: {{ include "typescript-ingestion-chart.fullname" . }}
   labels:
-    {{- include "ingestion-chart.labels" . | nindent 4 }}
+    {{- include "typescript-ingestion-chart.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "ingestion-chart.fullname" . }}
+    name: {{ include "typescript-ingestion-chart.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
