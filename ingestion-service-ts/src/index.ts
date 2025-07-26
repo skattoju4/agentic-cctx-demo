@@ -22,7 +22,9 @@ producer.on('error', (error) => {
     console.error('Error in Kafka Producer:', error);
 });
 
-app.post('/transactions', (req: Request, res: Response) => {
+const router = express.Router();
+
+router.post('/', (req: Request, res: Response) => {
     const transaction: Transaction = req.body;
     const payload: ProduceRequest[] = [
         {
@@ -42,7 +44,12 @@ app.post('/transactions', (req: Request, res: Response) => {
     });
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+if (require.main === module) {
+    const port = process.env.PORT || 3000;
+    app.use('/transactions', router);
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+}
+
+module.exports = router;
