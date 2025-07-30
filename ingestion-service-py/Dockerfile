@@ -6,4 +6,7 @@ COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+ENV KAFKA_HOST="localhost"
+ENV KAFKA_PORT="9092"
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]

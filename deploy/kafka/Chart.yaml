@@ -1,0 +1,10 @@
+apiVersion: v2
+name: kafka
+description: A Helm chart for deploying Strimzi Kafka Operator
+type: application
+version: 0.1.0
+appVersion: "0.28.0"
+dependencies:
+  - name: strimzi-kafka-operator
+    version: 0.28.0
+    repository: https://strimzi.io/charts/

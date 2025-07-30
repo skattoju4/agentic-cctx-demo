@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from kafka import KafkaProducer
 import json
+import os
 from contextlib import asynccontextmanager
 
 
@@ -16,7 +17,9 @@ producer = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global producer
-    producer = KafkaProducer(bootstrap_servers='localhost:9092',
+    kafka_host = os.environ.get("KAFKA_HOST", "localhost")
+    kafka_port = os.environ.get("KAFKA_PORT", "9092")
+    producer = KafkaProducer(bootstrap_servers=f"{kafka_host}:{kafka_port}",
                              value_serializer=lambda v: json.dumps(v).encode('utf-8'))
     yield
     producer.close()
