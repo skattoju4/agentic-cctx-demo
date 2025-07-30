@@ -40,6 +40,15 @@ spec:
           {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: KAFKA_HOST
+              value: {{ .Values.kafka.host | quote }}
+            - name: KAFKA_PORT
+              value: {{ .Values.kafka.port | quote }}
+            {{- range $key, $val := .Values.config }}
+            - name: {{ $key | upper | replace "-" "_" }}
+              value: {{ $val | quote }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

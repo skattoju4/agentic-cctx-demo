@@ -4,7 +4,10 @@ import { KafkaClient, Producer, ProduceRequest } from 'kafka-node';
 const app = express();
 app.use(express.json());
 
-const client = new KafkaClient({ kafkaHost: 'localhost:9092' });
+const kafkaHost = process.env.KAFKA_HOST || 'localhost';
+const kafkaPort = process.env.KAFKA_PORT || '9092';
+
+const client = new KafkaClient({ kafkaHost: `${kafkaHost}:${kafkaPort}` });
 const producer = new Producer(client);
 
 interface Transaction {
