@@ -31,7 +31,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file ingestion-service-py/Dockerfile --tag ingestion-service-py:latest
+      run: docker build ./ingestion-service-py --file ./ingestion-service-py/Dockerfile --tag ingestion-service-py:latest
 
   test:
     runs-on: ubuntu-latest
