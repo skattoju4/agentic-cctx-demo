@@ -2,14 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: strimzi-cluster-operator
+  namespace: {{ .Release.Namespace }}
   labels:
     app: {{ template "strimzi.name" . }}
     chart: {{ template "strimzi.chart" . }}
     component: deployment
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  {{- with .Values.deploymentAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicas }}
+  {{- if .Values.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- end }}
   selector:
     matchLabels:
       name: strimzi-cluster-operator
@@ -27,10 +35,16 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
-      serviceAccountName: strimzi-cluster-operator
-      {{- if .Values.image.imagePullSecrets }}
+      serviceAccountName: {{ .Values.serviceAccount }}
+      {{- /* imagePullSecrets is allowed to be for backwards compatibility */ -}}
+      {{- if kindIs "string" .Values.image.imagePullSecrets }}
       imagePullSecrets:
         - name: {{ .Values.image.imagePullSecrets }}
+      {{- else if kindIs "slice" .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- with .Values.image.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- end }}
       {{- with .Values.podSecurityContext }}
       securityContext: {{ toYaml . | nindent 8 }}
@@ -48,7 +62,7 @@ spec:
             name: {{ .Values.logConfigMap }}
       containers:
         - name: strimzi-cluster-operator
-          image: {{ default .Values.defaultImageRegistry .Values.image.registry }}/{{ default .Values.defaultImageRepository .Values.image.repository}}/{{ .Values.image.name }}:{{ default .Values.defaultImageTag .Values.image.tag }}
+          image: {{ template "strimzi.image" (set . "key" "") }}
           ports:
             - containerPort: 8080
               name: http
@@ -83,26 +97,28 @@ spec:
               value: {{ .Values.operationTimeoutMs | quote }}
             {{- template "strimzi.kafka.image.map" . }}
             - name: STRIMZI_DEFAULT_TOPIC_OPERATOR_IMAGE
-              value: {{ default .Values.defaultImageRegistry  .Values.topicOperator.image.registry }}/{{ default .Values.defaultImageRepository .Values.topicOperator.image.repository }}/{{ .Values.topicOperator.image.name }}:{{ default  .Values.defaultImageTag .Values.topicOperator.image.tag }}
+              value: {{ template "strimzi.image" (set . "key" "topicOperator") }}
             - name: STRIMZI_DEFAULT_USER_OPERATOR_IMAGE
-              value: {{ default .Values.defaultImageRegistry  .Values.userOperator.image.registry }}/{{ default .Values.defaultImageRepository .Values.userOperator.image.repository }}/{{ .Values.userOperator.image.name }}:{{ default .Values.defaultImageTag .Values.userOperator.image.tag }}
+              value: {{ template "strimzi.image" (set . "key" "userOperator") }}
             - name: STRIMZI_DEFAULT_KAFKA_INIT_IMAGE
-              value: {{ default .Values.defaultImageRegistry  .Values.kafkaInit.image.registry }}/{{ default .Values.defaultImageRepository .Values.kafkaInit.image.repository }}/{{ .Values.kafkaInit.image.name }}:{{ default .Values.defaultImageTag .Values.kafkaInit.image.tag }}
+              value: {{ template "strimzi.image" (set . "key" "kafkaInit") }}
             - name: STRIMZI_DEFAULT_KAFKA_BRIDGE_IMAGE
-              value: {{ default .Values.defaultImageRegistry  .Values.kafkaBridge.image.registry }}/{{ default .Values.defaultImageRepository .Values.kafkaBridge.image.repository }}/{{ .Values.kafkaBridge.image.name }}:{{ default .Values.defaultImageTag .Values.kafkaBridge.image.tag }}
-            - name: STRIMZI_DEFAULT_JMXTRANS_IMAGE
-              value: {{ default .Values.defaultImageRegistry  .Values.jmxTrans.image.registry }}/{{ default .Values.defaultImageRepository .Values.jmxTrans.image.repository }}/{{ .Values.jmxTrans.image.name }}:{{ default .Values.defaultImageTag .Values.jmxTrans.image.tag }}
+              value: {{ template "strimzi.image" (set . "key" "kafkaBridge") }}
             - name: STRIMZI_DEFAULT_KANIKO_EXECUTOR_IMAGE
-              value: {{ default .Values.defaultImageRegistry  .Values.kanikoExecutor.image.registry }}/{{ default .Values.defaultImageRepository .Values.kanikoExecutor.image.repository }}/{{ .Values.kanikoExecutor.image.name }}:{{ default .Values.defaultImageTag .Values.kanikoExecutor.image.tag }}
+              value: {{ template "strimzi.image" (set . "key" "kanikoExecutor") }}
             - name: STRIMZI_DEFAULT_MAVEN_BUILDER
-              value: {{ default .Values.defaultImageRegistry  .Values.mavenBuilder.image.registry }}/{{ default .Values.defaultImageRepository .Values.mavenBuilder.image.repository }}/{{ .Values.mavenBuilder.image.name }}:{{ default .Values.defaultImageTag .Values.mavenBuilder.image.tag }}
+              value: {{ template "strimzi.image" (set . "key" "mavenBuilder") }}
             - name: STRIMZI_OPERATOR_NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-            {{- if .Values.image.imagePullSecrets }}
+            {{- /* imagePullSecrets is allowed to be for backwards compatibility */ -}}
+            {{- if kindIs "string" .Values.image.imagePullSecrets }}
             - name: STRIMZI_IMAGE_PULL_SECRETS
               value: {{ .Values.image.imagePullSecrets }}
+            {{- else if kindIs "slice" .Values.image.imagePullSecrets }}
+            - name: STRIMZI_IMAGE_PULL_SECRETS
+              value: {{ template "strimzi.listPluck" (dict "list" .Values.image.imagePullSecrets "key" "name") }}
             {{- end }}
             {{- if .Values.image.operatorNamespaceLabels }}
             - name: STRIMZI_OPERATOR_NAMESPACE_LABELS
@@ -128,11 +144,29 @@ spec:
             - name: STRIMZI_CONNECT_BUILD_TIMEOUT_MS
               value: {{ .Values.connectBuildTimeoutMs | quote }}
             {{- end }}
-            - name: STRIMZI_KUBERNETES_VERSION
-              value: {{ .Values.kubernetesVersion | quote }}
+            {{- if ne .Values.generatePodDisruptionBudget true}}
+            - name: STRIMZI_POD_DISRUPTION_BUDGET_GENERATION
+              value: {{ .Values.generatePodDisruptionBudget | quote }}
+            {{- end }}
             {{- if .Values.extraEnvs }}
 {{ toYaml .Values.extraEnvs | indent 12 }}
             {{- end }}
+            - name: STRIMZI_LEADER_ELECTION_ENABLED
+              {{- if .Values.leaderElection.enable }}
+              value: "true"
+              {{- else }}
+              value: "false"
+              {{- end }}
+            - name: STRIMZI_LEADER_ELECTION_LEASE_NAME
+              value: "strimzi-cluster-operator"
+            - name: STRIMZI_LEADER_ELECTION_LEASE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: STRIMZI_LEADER_ELECTION_IDENTITY
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           livenessProbe:
             httpGet:
               path: /healthy
@@ -162,5 +196,3 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-  strategy:
-    type: Recreate

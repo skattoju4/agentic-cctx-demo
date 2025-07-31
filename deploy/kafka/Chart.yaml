@@ -1,10 +1,24 @@
 apiVersion: v2
-name: kafka
-description: A Helm chart for deploying Strimzi Kafka Operator
-type: application
-version: 0.1.0
-appVersion: "0.28.0"
-dependencies:
-  - name: strimzi-kafka-operator
-    version: 0.28.0
-    repository: https://strimzi.io/charts/
+appVersion: 0.47.0
+description: 'Strimzi: Apache Kafka running on Kubernetes'
+home: https://strimzi.io/
+icon: https://raw.githubusercontent.com/strimzi/strimzi-kafka-operator/main/documentation/logo/strimzi_logo.png
+keywords:
+- kafka
+- queue
+- stream
+- event
+- messaging
+- datastore
+- topic
+maintainers:
+- name: Frawless
+- name: ppatierno
+- name: samuel-hawker
+- name: scholzj
+- name: tombentley
+- name: sknot-rh
+name: strimzi-kafka-operator
+sources:
+- https://github.com/strimzi/strimzi-kafka-operator
+version: 0.47.0
