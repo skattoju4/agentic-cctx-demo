@@ -77,4 +77,4 @@ jobs:
         # Wait for the ingestion service to be ready
         kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingestion-service-py -n default --timeout=300s
         # Run the e2e test script
-        python scripts/e2e_test.py
+        INGESTION_SERVICE_HOST=localhost INGESTION_SERVICE_PORT=80 python scripts/e2e_test.py
