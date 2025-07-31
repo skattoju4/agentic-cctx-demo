@@ -128,6 +128,8 @@ spec:
             - name: STRIMZI_CONNECT_BUILD_TIMEOUT_MS
               value: {{ .Values.connectBuildTimeoutMs | quote }}
             {{- end }}
+            - name: STRIMZI_KUBERNETES_VERSION
+              value: {{ .Values.kubernetesVersion | quote }}
             {{- if .Values.extraEnvs }}
 {{ toYaml .Values.extraEnvs | indent 12 }}
             {{- end }}
