@@ -64,6 +64,9 @@ jobs:
       run: |
         chmod +x scripts/get_helm.sh
         ./scripts/get_helm.sh
+    - name: Lint Helm chart
+      run: |
+        helm lint deploy/kafka
     - name: Deploy Kafka
       run: |
         echo "Deploying Kafka..."
