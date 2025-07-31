@@ -60,28 +60,35 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests kafka-python
-    - name: Run e2e test
+    - name: Set up Helm
       run: |
-        # Install helm
-        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-        chmod 700 get_helm.sh
-        ./get_helm.sh
-        # Deploy Kafka
+        chmod +x scripts/get_helm.sh
+        ./scripts/get_helm.sh
+    - name: Deploy Kafka
+      run: |
+        echo "Deploying Kafka..."
         helm install kafka ./deploy/kafka -n default
-        # Wait for Kafka to be ready
+        echo "Waiting for Kafka to be ready..."
         kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=kafka -n default --timeout=300s
-        # Deploy the ingestion service
+        echo "Kafka is ready."
+    - name: Deploy Ingestion Service
+      run: |
+        echo "Deploying Ingestion Service..."
         helm install ingestion-py ./deploy/ingestion-service-py/helm -n default \
           --set kafka.host=kafka-kafka-bootstrap \
           --set kafka.port=9092
-        # Wait for the ingestion service to be ready
+        echo "Waiting for Ingestion Service to be ready..."
         kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingestion-service-py -n default --timeout=300s
-        # Get all resources in the cluster
+        echo "Ingestion Service is ready."
+    - name: Verify Deployments
+      run: |
+        echo "Verifying deployments..."
         kubectl get all -n default
-        # Describe pods
         kubectl describe pods -n default
-        # Port forward the ingestion service and Kafka
+    - name: Run E2E Test
+      run: |
+        echo "Running e2e test..."
         kubectl port-forward svc/ingestion-py-ingestion-service-py-helm 8080:80 &
         kubectl port-forward svc/kafka-kafka-bootstrap 9092:9092 &
-        # Run the e2e test script
+        sleep 5 # give port-forward some time to start
         INGESTION_SERVICE_HOST=localhost INGESTION_SERVICE_PORT=8080 KAFKA_HOST=localhost KAFKA_PORT=9092 python scripts/e2e_test.py
