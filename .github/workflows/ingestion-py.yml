@@ -76,5 +76,12 @@ jobs:
           --set kafka.port=9092
         # Wait for the ingestion service to be ready
         kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingestion-service-py -n default --timeout=300s
+        # Get all resources in the cluster
+        kubectl get all -n default
+        # Describe pods
+        kubectl describe pods -n default
+        # Port forward the ingestion service and Kafka
+        kubectl port-forward svc/ingestion-py-ingestion-service-py-helm 8080:80 &
+        kubectl port-forward svc/kafka-kafka-bootstrap 9092:9092 &
         # Run the e2e test script
-        INGESTION_SERVICE_HOST=localhost INGESTION_SERVICE_PORT=80 python scripts/e2e_test.py
+        INGESTION_SERVICE_HOST=localhost INGESTION_SERVICE_PORT=8080 KAFKA_HOST=localhost KAFKA_PORT=9092 python scripts/e2e_test.py
