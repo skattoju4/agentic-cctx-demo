@@ -99,7 +99,7 @@ jobs:
       run: |
         echo "Deploying Ingestion Service..."
         helm install ingestion-py ./deploy/ingestion-service-py/helm -n default \
-          --set kafka.host=${{ env.KAFKA_RELEASE_NAME }}-kafka-bootstrap \
+          --set kafka.host=kafka-kafka-kafka-bootstrap \
           --set kafka.port=9092 \
           --set image.repository=ghcr.io/${{ github.repository }}/ingestion-service-py \
           --set image.tag=${{ github.sha }}
@@ -120,6 +120,6 @@ jobs:
       run: |
         echo "Running e2e test..."
         kubectl port-forward svc/ingestion-py-ingestion-service-py-helm 8080:80 &
-        kubectl port-forward svc/${{ env.KAFKA_RELEASE_NAME }}-kafka-bootstrap 9092:9092 &
+        kubectl port-forward svc/kafka-kafka-kafka-bootstrap 9092:9092 &
         sleep 5 # give port-forward some time to start
         INGESTION_SERVICE_HOST=localhost INGESTION_SERVICE_PORT=8080 KAFKA_HOST=localhost KAFKA_PORT=9092 python scripts/e2e_test.py
