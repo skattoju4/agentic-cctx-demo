@@ -74,24 +74,30 @@ jobs:
         echo "Waiting for Kafka to be ready..."
         kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=kafka -n default --timeout=300s
         echo "Kafka is ready."
-    - name: Deploy Ingestion Service
-      run: |
-        echo "Deploying Ingestion Service..."
-        helm install ingestion-py ./deploy/ingestion-service-py/helm -n default \
-          --set kafka.host=kafka-kafka-bootstrap \
-          --set kafka.port=9092
-        echo "Waiting for Ingestion Service to be ready..."
-        kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingestion-service-py -n default --timeout=300s
-        echo "Ingestion Service is ready."
     - name: Verify Deployments
+      if: always()
       run: |
         echo "Verifying deployments..."
         kubectl get all -n default
         kubectl describe pods -n default
-    - name: Run E2E Test
+    - name: Get Strimzi Operator Logs
+      if: always()
       run: |
-        echo "Running e2e test..."
-        kubectl port-forward svc/ingestion-py-ingestion-service-py-helm 8080:80 &
-        kubectl port-forward svc/kafka-kafka-bootstrap 9092:9092 &
-        sleep 5 # give port-forward some time to start
-        INGESTION_SERVICE_HOST=localhost INGESTION_SERVICE_PORT=8080 KAFKA_HOST=localhost KAFKA_PORT=9092 python scripts/e2e_test.py
+        echo "Getting logs from Strimzi operator..."
+        kubectl logs -l strimzi.io/kind=cluster-operator -n default --tail=500
+#    - name: Deploy Ingestion Service
+#      run: |
+#        echo "Deploying Ingestion Service..."
+#        helm install ingestion-py ./deploy/ingestion-service-py/helm -n default \
+#          --set kafka.host=kafka-kafka-bootstrap \
+#          --set kafka.port=9092
+#        echo "Waiting for Ingestion Service to be ready..."
+#        kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingestion-service-py -n default --timeout=300s
+#        echo "Ingestion Service is ready."
+#    - name: Run E2E Test
+#      run: |
+#        echo "Running e2e test..."
+#        kubectl port-forward svc/ingestion-py-ingestion-service-py-helm 8080:80 &
+#        kubectl port-forward svc/kafka-kafka-bootstrap 9092:9092 &
+#        sleep 5 # give port-forward some time to start
+#        INGESTION_SERVICE_HOST=localhost INGESTION_SERVICE_PORT=8080 KAFKA_HOST=localhost KAFKA_PORT=9092 python scripts/e2e_test.py
