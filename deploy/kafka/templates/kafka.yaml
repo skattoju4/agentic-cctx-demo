@@ -26,8 +26,10 @@ spec:
     listeners:
       - name: plain
         port: 9092
-        type: internal
+        type: loadbalancer
         tls: false
+        configuration:
+          advertisedHost: localhost
       - name: tls
         port: 9093
         type: internal
@@ -41,3 +43,13 @@ spec:
   entityOperator:
     topicOperator: {}
     userOperator: {}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: transactions
+  labels:
+    strimzi.io/cluster: {{ .Release.Name }}-kafka
+spec:
+  partitions: 1
+  replicas: 1

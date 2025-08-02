@@ -29,7 +29,15 @@ app = FastAPI(lifespan=lifespan)
 
 @app.post("/transactions/")
 async def create_transaction(transaction: Transaction):
-    producer.send('transactions', transaction.dict())
+    print(f"Received transaction: {transaction.dict()}")
+    try:
+        future = producer.send('transactions', transaction.dict())
+        # Block for 'synchronous' sends
+        record_metadata = future.get(timeout=10)
+        print(f"Successfully sent message to topic '{record_metadata.topic}' at partition {record_metadata.partition} with offset {record_metadata.offset}")
+    except Exception as e:
+        print(f"Failed to send message to Kafka: {e}")
+        # In a real application, you'd probably want to return an error response here
     return transaction
 
 @app.get("/healthz")
