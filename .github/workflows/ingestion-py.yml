@@ -90,6 +90,11 @@ jobs:
         echo "Waiting for Ingestion Service to be ready..."
         kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingestion-service-py -n default --timeout=300s
         echo "Ingestion Service is ready."
+    - name: Get Ingestion Service logs on failure
+      if: failure()
+      run: |
+        echo "Capturing logs from Ingestion Service pod..."
+        kubectl logs -l app.kubernetes.io/name=ingestion-service-py -n default --tail=500
     - name: Verify Deployments
       run: |
         echo "Verifying deployments..."
