@@ -26,8 +26,10 @@ spec:
     listeners:
       - name: plain
         port: 9092
-        type: internal
+        type: loadbalancer
         tls: false
+        configuration:
+          advertisedHost: localhost
       - name: tls
         port: 9093
         type: internal
