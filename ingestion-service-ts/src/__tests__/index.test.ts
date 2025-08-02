@@ -22,6 +22,19 @@ app.use(express.json());
 const router = require('../index');
 app.use('/transactions', router);
 
+app.get('/healthz', (req, res) => {
+    res.status(200).json({status: 'ok'});
+});
+
+describe('GET /healthz', () => {
+    it('should return 200 OK', async () => {
+        const response = await request(app)
+            .get('/healthz')
+            .send();
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual({status: 'ok'});
+    });
+});
 
 describe('POST /transactions', () => {
   it('should send a message to Kafka and return the transaction', async () => {
