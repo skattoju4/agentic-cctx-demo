@@ -31,3 +31,7 @@ app = FastAPI(lifespan=lifespan)
 async def create_transaction(transaction: Transaction):
     producer.send('transactions', transaction.dict())
     return transaction
+
+@app.get("/healthz")
+async def healthz():
+    return {"status": "ok"}
