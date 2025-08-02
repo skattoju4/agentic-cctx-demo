@@ -93,6 +93,11 @@ jobs:
         echo "Verifying deployments..."
         kubectl get all -n default
         kubectl describe pods -n default
+    - name: Get Strimzi Operator Logs
+      if: always()
+      run: |
+        echo "Getting logs from Strimzi operator..."
+        kubectl logs -l strimzi.io/kind=cluster-operator -n default --tail=500
     - name: Run E2E Test
       run: |
         echo "Running e2e test..."
