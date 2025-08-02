@@ -7,6 +7,7 @@ metadata:
 spec:
   kafka:
     version: 4.0.0
+    replicas: 1
     listeners:
       - name: plain
         port: 9092
@@ -21,22 +22,11 @@ spec:
       transaction.state.log.replication.factor: 1
       transaction.state.log.min.isr: 1
       log.message.format.version: "4.0"
+    storage:
+      type: ephemeral
+  zookeeper:
+    replicas: 0
   clusterCa:
     generateCertificateAuthority: true
   clientsCa:
     generateCertificateAuthority: true
----
-apiVersion: kafka.strimzi.io/v1beta2
-kind: KafkaNodePool
-metadata:
-  name: controller
-  labels:
-    strimzi.io/cluster: {{ .Release.Name }}-kafka
-spec:
-  replicas: 1
-  roles:
-    - controller
-  storage:
-    type: persistent-claim
-    size: 10Gi
-    deleteClaim: false
