@@ -76,6 +76,8 @@ jobs:
         echo "Waiting for Strimzi operator to be ready..."
         kubectl wait --for=condition=ready pod -l strimzi.io/kind=cluster-operator -n default --timeout=300s
         echo "Strimzi operator is ready."
+        echo "Getting logs from Strimzi operator..."
+        kubectl logs -l strimzi.io/kind=cluster-operator -n default --tail=500
         echo "Waiting for Kafka cluster to be ready..."
         kubectl wait --for=condition=Ready kafka/kafka-kafka --timeout=300s
         echo "Kafka is ready."
@@ -93,11 +95,6 @@ jobs:
         echo "Verifying deployments..."
         kubectl get all -n default
         kubectl describe pods -n default
-    - name: Get Strimzi Operator Logs
-      if: always()
-      run: |
-        echo "Getting logs from Strimzi operator..."
-        kubectl logs -l strimzi.io/kind=cluster-operator -n default --tail=500
     - name: Run E2E Test
       run: |
         echo "Running e2e test..."
