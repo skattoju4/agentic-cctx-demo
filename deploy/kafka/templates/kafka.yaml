@@ -41,3 +41,13 @@ spec:
   entityOperator:
     topicOperator: {}
     userOperator: {}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: transactions
+  labels:
+    strimzi.io/cluster: {{ .Release.Name }}-kafka
+spec:
+  partitions: 1
+  replicas: 1
