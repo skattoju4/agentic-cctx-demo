@@ -26,6 +26,8 @@ spec:
       type: ephemeral
   zookeeper:
     replicas: 0
+    storage:
+      type: ephemeral
   clusterCa:
     generateCertificateAuthority: true
   clientsCa:
