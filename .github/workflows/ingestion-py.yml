@@ -69,10 +69,17 @@ jobs:
         helm lint deploy/kafka
     - name: Deploy Kafka
       run: |
+        echo "Giving the cluster some time to initialize..."
+        sleep 30
         echo "Deploying Kafka..."
         helm install kafka ./deploy/kafka -n default
-        echo "Waiting for Kafka to be ready..."
-        kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=kafka -n default --timeout=300s
+        echo "Waiting for Strimzi operator to be ready..."
+        kubectl wait --for=condition=ready pod -l strimzi.io/kind=cluster-operator -n default --timeout=300s
+        echo "Strimzi operator is ready."
+        echo "Getting logs from Strimzi operator..."
+        kubectl logs -l strimzi.io/kind=cluster-operator -n default --tail=500
+        echo "Waiting for Kafka cluster to be ready..."
+        kubectl wait --for=condition=Ready kafka/kafka-kafka --timeout=300s
         echo "Kafka is ready."
     - name: Deploy Ingestion Service
       run: |
