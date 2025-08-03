@@ -19,8 +19,9 @@ jest.mock('kafka-node', () => {
 
 const app = express();
 app.use(express.json());
-const router = require('../index');
-app.use('/transactions', router);
+const { transactionRouter, healthzRouter } = require('../index');
+app.use('/transactions', transactionRouter);
+app.use('/healthz', healthzRouter);
 
 app.get('/healthz', (req, res) => {
     res.status(200).json({status: 'ok'});
