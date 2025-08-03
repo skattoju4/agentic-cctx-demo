@@ -198,7 +198,7 @@ jobs:
         echo "Running e2e test for typescript..."
         kubectl exec e2e-test-runner -- \
           env INGESTION_SERVICE_HOST=ingestion-ts-ingestion-service-ts \
-              INGESTION_SERVICE_PORT=80 \
+              INGESTION_SERVICE_PORT=3000 \
               KAFKA_HOST=kafka-kafka-kafka-bootstrap \
               KAFKA_PORT=9092 \
           python /scripts/e2e_test.py
