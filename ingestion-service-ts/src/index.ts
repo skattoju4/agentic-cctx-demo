@@ -25,9 +25,9 @@ producer.on('error', (error) => {
     console.error('Error in Kafka Producer:', error);
 });
 
-const router = express.Router();
+const transactionRouter = express.Router();
 
-router.post('/', (req: Request, res: Response) => {
+transactionRouter.post('/', (req: Request, res: Response) => {
     const transaction: Transaction = req.body;
     const payload: ProduceRequest[] = [
         {
@@ -47,16 +47,18 @@ router.post('/', (req: Request, res: Response) => {
     });
 });
 
-app.get('/healthz', (req: Request, res: Response) => {
+const healthzRouter = express.Router();
+healthzRouter.get('/', (req: Request, res: Response) => {
     res.status(200).json({status: 'ok'});
 });
 
 if (require.main === module) {
     const port = process.env.PORT || 3000;
-    app.use('/transactions', router);
+    app.use('/transactions', transactionRouter);
+    app.use('/healthz', healthzRouter);
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
     });
 }
 
-module.exports = router;
+module.exports = {transactionRouter, healthzRouter};
