@@ -111,9 +111,11 @@ jobs:
       run: |
         chmod +x scripts/get_helm.sh
         ./scripts/get_helm.sh
-    - name: Lint Helm chart
+    - name: Lint Helm charts
       run: |
         helm lint deploy/kafka
+        helm lint deploy/ingestion-service-py/helm
+        helm lint deploy/ingestion-service-ts/helm
     - name: Deploy Kafka
       run: |
         echo "Giving the cluster some time to initialize..."
