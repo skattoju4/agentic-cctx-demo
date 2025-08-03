@@ -47,11 +47,12 @@ router.post('/', (req: Request, res: Response) => {
     });
 });
 
+app.get('/healthz', (req: Request, res: Response) => {
+    res.status(200).json({status: 'ok'});
+});
+
 if (require.main === module) {
     const port = process.env.PORT || 3000;
-    app.get('/healthz', (req: Request, res: Response) => {
-        res.status(200).json({status: 'ok'});
-    });
     app.use('/transactions', router);
     app.listen(port, () => {
         console.log(`Server is running on port ${port}`);
