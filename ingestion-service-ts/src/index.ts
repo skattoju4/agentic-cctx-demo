@@ -40,12 +40,14 @@ transactionRouter.post('/', (req: Request, res: Response) => {
 });
 
 const healthzRouter = express.Router();
-healthzRouter.get('/', (req: Request, res: Response) => {
-    res.status(200).json({status: 'ok'});
-});
 
 producer.on('ready', () => {
     console.log('Kafka Producer is connected and ready.');
+
+    healthzRouter.get('/', (req: Request, res: Response) => {
+        res.status(200).json({status: 'ok'});
+    });
+
     if (require.main === module) {
         const port = process.env.PORT || 3000;
         app.use('/transactions', transactionRouter);
