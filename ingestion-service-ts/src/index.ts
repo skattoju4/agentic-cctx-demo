@@ -17,14 +17,6 @@ interface Transaction {
     description: string;
 }
 
-producer.on('ready', () => {
-    console.log('Kafka Producer is connected and ready.');
-});
-
-producer.on('error', (error) => {
-    console.error('Error in Kafka Producer:', error);
-});
-
 const transactionRouter = express.Router();
 
 transactionRouter.post('/', (req: Request, res: Response) => {
@@ -52,13 +44,20 @@ healthzRouter.get('/', (req: Request, res: Response) => {
     res.status(200).json({status: 'ok'});
 });
 
-if (require.main === module) {
-    const port = process.env.PORT || 3000;
-    app.use('/transactions', transactionRouter);
-    app.use('/healthz', healthzRouter);
-    app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
-    });
-}
+producer.on('ready', () => {
+    console.log('Kafka Producer is connected and ready.');
+    if (require.main === module) {
+        const port = process.env.PORT || 3000;
+        app.use('/transactions', transactionRouter);
+        app.use('/healthz', healthzRouter);
+        app.listen(port, () => {
+            console.log(`Server is running on port ${port}`);
+        });
+    }
+});
+
+producer.on('error', (error) => {
+    console.error('Error in Kafka Producer:', error);
+});
 
 module.exports = {transactionRouter, healthzRouter};
