@@ -7,8 +7,8 @@ import os
 def main():
     # Send a request to the ingestion service
     transaction = {
-        "userId": 1,
-        "cardId": 1,
+        "user_id": 1,
+        "card_id": 1,
         "amount": 10.0,
         "description": "e2e test"
     }

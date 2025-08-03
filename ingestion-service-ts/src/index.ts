@@ -11,8 +11,8 @@ const client = new KafkaClient({ kafkaHost: `${kafkaHost}:${kafkaPort}` });
 const producer = new Producer(client);
 
 interface Transaction {
-    userId: number;
-    cardId: number;
+    user_id: number;
+    card_id: number;
     amount: number;
     description: string;
 }
