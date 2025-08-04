@@ -219,4 +219,4 @@ jobs:
       if: failure()
       run: |
         echo "Capturing logs from Kafka pod..."
-        kubectl logs -l strimzi.io/name=kafka-kafka -n default --tail=500
+        kubectl logs kafka-kafka-dual-role-0 -n default --tail=500

@@ -1,20 +1,20 @@
 import request from 'supertest';
 import express from 'express';
-import { KafkaClient, Producer } from 'kafka-node';
+import { Kafka } from 'kafkajs';
 
-const mockSend = jest.fn((payload, cb) => cb(null, 'test'));
-jest.mock('kafka-node', () => {
-  const originalKafka = jest.requireActual('kafka-node');
-  return {
-    ...originalKafka,
-    Producer: jest.fn().mockImplementation(() => ({
-      on: jest.fn(),
-      send: mockSend,
-    })),
-    KafkaClient: jest.fn().mockImplementation(() => ({
-        on: jest.fn(),
-    }))
-  };
+const mockSend = jest.fn(() => Promise.resolve());
+jest.mock('kafkajs', () => {
+    const originalKafka = jest.requireActual('kafkajs');
+    return {
+        ...originalKafka,
+        Kafka: jest.fn().mockImplementation(() => ({
+            producer: jest.fn(() => ({
+                connect: jest.fn(() => Promise.resolve()),
+                send: mockSend,
+                disconnect: jest.fn(() => Promise.resolve()),
+            })),
+        })),
+    };
 });
 
 const app = express();
@@ -40,10 +40,10 @@ describe('GET /healthz', () => {
 describe('POST /transactions', () => {
   it('should send a message to Kafka and return the transaction', async () => {
     const transaction = {
-      userId: 1,
-      cardId: 1,
-      amount: 10.0,
-      description: 'test',
+        user_id: 1,
+        card_id: 1,
+        amount: 10.0,
+        description: 'test',
     };
 
     const response = await request(app)
@@ -52,9 +52,9 @@ describe('POST /transactions', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual(transaction);
-    expect(mockSend).toHaveBeenCalledWith(
-      [{ topic: 'transactions', messages: JSON.stringify(transaction) }],
-      expect.any(Function)
-    );
+    expect(mockSend).toHaveBeenCalledWith({
+        topic: 'transactions',
+        messages: [{ value: JSON.stringify(transaction) }],
+    });
   });
 });

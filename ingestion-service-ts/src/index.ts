@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { KafkaClient, Producer, ProduceRequest } from 'kafka-node';
+import { Kafka } from 'kafkajs';
 
 const app = express();
 app.use(express.json());
@@ -7,8 +7,12 @@ app.use(express.json());
 const kafkaHost = process.env.KAFKA_HOST || 'localhost';
 const kafkaPort = process.env.KAFKA_PORT || '9092';
 
-const client = new KafkaClient({ kafkaHost: `${kafkaHost}:${kafkaPort}` });
-const producer = new Producer(client);
+const kafka = new Kafka({
+    clientId: 'ingestion-service-ts',
+    brokers: [`${kafkaHost}:${kafkaPort}`]
+});
+
+const producer = kafka.producer();
 
 interface Transaction {
     user_id: number;
@@ -19,35 +23,28 @@ interface Transaction {
 
 const transactionRouter = express.Router();
 
-transactionRouter.post('/', (req: Request, res: Response) => {
+transactionRouter.post('/', async (req: Request, res: Response) => {
     const transaction: Transaction = req.body;
-    const payload: ProduceRequest[] = [
-        {
+    try {
+        await producer.send({
             topic: 'transactions',
-            messages: JSON.stringify(transaction),
-        },
-    ];
-
-    producer.send(payload, (error, data) => {
-        if (error) {
-            console.error('Error sending message to Kafka:', error);
-            res.status(500).send('Error sending message to Kafka');
-        } else {
-            console.log('Message sent to Kafka:', data);
-            res.status(200).json(transaction);
-        }
-    });
+            messages: [{ value: JSON.stringify(transaction) }],
+        });
+        console.log('Message sent to Kafka:', transaction);
+        res.status(200).json(transaction);
+    } catch (error) {
+        console.error('Error sending message to Kafka:', error);
+        res.status(500).send('Error sending message to Kafka');
+    }
 });
 
 const healthzRouter = express.Router();
+healthzRouter.get('/', (req: Request, res: Response) => {
+    res.status(200).json({status: 'ok'});
+});
 
-producer.on('ready', () => {
-    console.log('Kafka Producer is connected and ready.');
-
-    healthzRouter.get('/', (req: Request, res: Response) => {
-        res.status(200).json({status: 'ok'});
-    });
-
+const run = async () => {
+    await producer.connect();
     if (require.main === module) {
         const port = process.env.PORT || 3000;
         app.use('/transactions', transactionRouter);
@@ -56,18 +53,13 @@ producer.on('ready', () => {
             console.log(`Server is running on port ${port}`);
         });
     }
-});
+};
 
-producer.on('error', (error) => {
-    console.error('Error in Kafka Producer:', error);
-});
+run().catch(console.error);
 
-process.on('SIGINT', () => {
-    producer.close(() => {
-        client.close(() => {
-            process.exit();
-        });
-    });
+process.on('SIGINT', async () => {
+    await producer.disconnect();
+    process.exit();
 });
 
 module.exports = {transactionRouter, healthzRouter};
