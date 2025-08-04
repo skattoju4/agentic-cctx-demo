@@ -33,6 +33,13 @@ jobs:
       packages: write
     steps:
     - uses: actions/checkout@v3
+    - name: Set up Helm
+      run: |
+        chmod +x scripts/get_helm.sh
+        ./scripts/get_helm.sh
+    - name: Lint Helm chart
+      run: |
+        helm lint deploy/ingestion-service-py/helm
     - name: Log in to the Container registry
       uses: docker/login-action@v2
       with:
@@ -51,6 +58,13 @@ jobs:
       packages: write
     steps:
     - uses: actions/checkout@v3
+    - name: Set up Helm
+      run: |
+        chmod +x scripts/get_helm.sh
+        ./scripts/get_helm.sh
+    - name: Lint Helm chart
+      run: |
+        helm lint deploy/ingestion-service-ts/helm
     - name: Log in to the Container registry
       uses: docker/login-action@v2
       with:
@@ -111,11 +125,9 @@ jobs:
       run: |
         chmod +x scripts/get_helm.sh
         ./scripts/get_helm.sh
-    - name: Lint Helm charts
+    - name: Lint Kafka Helm chart
       run: |
         helm lint deploy/kafka
-        helm lint deploy/ingestion-service-py/helm
-        helm lint deploy/ingestion-service-ts/helm
     - name: Deploy Kafka
       run: |
         echo "Giving the cluster some time to initialize..."
@@ -168,11 +180,6 @@ jobs:
               KAFKA_HOST=kafka-kafka-kafka-bootstrap \
               KAFKA_PORT=9092 \
           python /scripts/e2e_test.py
-    - name: Get Ingestion Service logs on failure - TypeScript
-      if: failure()
-      run: |
-        echo "Capturing logs from Ingestion Service pod..."
-        kubectl logs -l app.kubernetes.io/name=ingestion-service-ts -n default --tail=500
     - name: Uninstall Ingestion Service - Python
       run: |
         echo "Uninstalling Ingestion Service - Python..."
@@ -188,11 +195,6 @@ jobs:
         echo "Waiting for Ingestion Service to be ready..."
         kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=ingestion-service-ts -n default --timeout=300s
         echo "Ingestion Service is ready."
-    - name: Get Ingestion Service logs on failure
-      if: failure()
-      run: |
-        echo "Capturing logs from Ingestion Service pod..."
-        kubectl logs -l app.kubernetes.io/name=ingestion-service-ts -n default --tail=500
     - name: Verify Deployments
       run: |
         echo "Verifying deployments..."
@@ -207,3 +209,8 @@ jobs:
               KAFKA_HOST=kafka-kafka-kafka-bootstrap \
               KAFKA_PORT=9092 \
           python /scripts/e2e_test.py
+    - name: Get Ingestion Service logs on failure - TypeScript
+      if: failure()
+      run: |
+        echo "Capturing logs from Ingestion Service pod..."
+        kubectl logs -l app.kubernetes.io/name=ingestion-service-ts -n default --tail=500
