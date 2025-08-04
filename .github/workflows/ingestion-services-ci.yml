@@ -168,6 +168,11 @@ jobs:
               KAFKA_HOST=kafka-kafka-kafka-bootstrap \
               KAFKA_PORT=9092 \
           python /scripts/e2e_test.py
+    - name: Get Ingestion Service logs on failure - TypeScript
+      if: failure()
+      run: |
+        echo "Capturing logs from Ingestion Service pod..."
+        kubectl logs -l app.kubernetes.io/name=ingestion-service-ts -n default --tail=500
     - name: Uninstall Ingestion Service - Python
       run: |
         echo "Uninstalling Ingestion Service - Python..."
