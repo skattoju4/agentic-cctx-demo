@@ -4,7 +4,7 @@ This service is a TypeScript-based implementation of the transaction ingestion s
 
 ## Local Development
 
-**Note:** The service requires a running Kafka instance. For local development, you can use the provided Docker Compose file to start Kafka: `make -C ../deploy install-kafka`
+**Note:** The service requires a running Kafka instance. For local development, you can use the provided Docker Compose file to start Kafka: `docker-compose -f ../deploy/kafka/compose.yaml up -d`
 
 To run the service locally, you will need to have Node.js and npm installed.
 

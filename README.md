@@ -1,4 +1,6 @@
-# Ingestion Service
+# agentic-cctx-demo
+
+## Ingestion Service
 
 This project contains a transaction ingestion service that receives transaction data, validates it, and pushes it to a Kafka topic for downstream processing. The service is implemented in both Python and TypeScript, and can be deployed to Kubernetes using Helm.
 
@@ -31,7 +33,7 @@ This section provides instructions on how to work with the Python implementation
 
 ### Local Development
 
-**Note:** The service requires a running Kafka instance. For local development, you can use the provided Docker Compose file to start Kafka: `make -C deploy install-kafka`
+**Note:** The service requires a running Kafka instance. For local development, you can use the provided Docker Compose file to start Kafka: `docker-compose -f deploy/kafka/compose.yaml up -d`
 
 1.  **Install dependencies:**
 
