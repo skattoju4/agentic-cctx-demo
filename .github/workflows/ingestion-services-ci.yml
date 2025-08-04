@@ -187,8 +187,9 @@ jobs:
     - name: Deploy Ingestion Service - TypeScript
       run: |
         echo "Deploying Ingestion Service - TypeScript..."
+        KAFKA_IP=$(kubectl get svc kafka-kafka-kafka-bootstrap -n default -o jsonpath='{.spec.clusterIP}')
         helm install ingestion-ts ./deploy/ingestion-service-ts/helm -n default \
-          --set kafka.host=kafka-kafka-kafka-bootstrap \
+          --set kafka.host=$KAFKA_IP \
           --set kafka.port=9092 \
           --set image.repository=ghcr.io/${{ github.repository }}/ingestion-service-ts \
           --set image.tag=${{ github.sha }}
@@ -214,3 +215,8 @@ jobs:
       run: |
         echo "Capturing logs from Ingestion Service pod..."
         kubectl logs -l app.kubernetes.io/name=ingestion-service-ts -n default --tail=500
+    - name: Get Kafka logs on failure
+      if: failure()
+      run: |
+        echo "Capturing logs from Kafka pod..."
+        kubectl logs -l strimzi.io/name=kafka-kafka -n default --tail=500

@@ -62,4 +62,12 @@ producer.on('error', (error) => {
     console.error('Error in Kafka Producer:', error);
 });
 
+process.on('SIGINT', () => {
+    producer.close(() => {
+        client.close(() => {
+            process.exit();
+        });
+    });
+});
+
 module.exports = {transactionRouter, healthzRouter};
