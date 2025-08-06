@@ -7,8 +7,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY common ./common
-
-COPY . .
+COPY ingestion-service-ts/. .
 
 RUN npm run build --if-present
 

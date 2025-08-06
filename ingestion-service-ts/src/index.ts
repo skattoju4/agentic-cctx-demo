@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Kafka } from 'kafkajs';
-import { Transaction } from '@common/models';
+import { Transaction } from '../common/models';
 
 const app = express();
 app.use(express.json());

@@ -8,9 +8,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "@common/*": ["../common/*"]
-    }
+    "baseUrl": "./src",
   }
 }
