@@ -40,10 +40,21 @@ describe('GET /healthz', () => {
 describe('POST /transactions', () => {
   it('should send a message to Kafka and return the transaction', async () => {
     const transaction = {
-        user_id: 1,
-        card_id: 1,
-        amount: 10.0,
-        description: 'test',
+        "user": 1,
+        "card": 1,
+        "year": 2023,
+        "month": 1,
+        "day": 1,
+        "time": "12:00:00",
+        "amount": "$10.00",
+        "use_chip": "Swipe Transaction",
+        "merchant_name": 123456789,
+        "merchant_city": "New York",
+        "merchant_state": "NY",
+        "zip": 10001.0,
+        "mcc": 5411,
+        "errors": "",
+        "is_fraud": "No"
     };
 
     const response = await request(app)

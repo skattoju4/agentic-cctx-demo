@@ -112,9 +112,48 @@ The ingestion service and Kafka are deployed to Kubernetes using Helm.
     curl -X POST "http://localhost:8080/transactions/" \
     -H "Content-Type: application/json" \
     -d '{
-        "user_id": 123,
-        "card_id": 456,
-        "amount": 78.90,
-        "description": "Test transaction"
+        "user": 1,
+        "card": 1,
+        "year": 2023,
+        "month": 1,
+        "day": 1,
+        "time": "12:00:00",
+        "amount": "$10.00",
+        "use_chip": "Swipe Transaction",
+        "merchant_name": 123456789,
+        "merchant_city": "New York",
+        "merchant_state": "NY",
+        "zip": 10001.0,
+        "mcc": 5411,
+        "errors": "",
+        "is_fraud": "No"
     }'
     ```
+
+## Data Model
+
+The common data model is defined in the `common` directory. It consists of three main entities: `Transaction`, `User`, and `Card`. The models are defined in both Python (`common/models.py`) and TypeScript (`common/models.ts`).
+
+### Transaction
+
+| Field          | Type     | Description                                |
+|----------------|----------|--------------------------------------------|
+| user           | int      | The ID of the user who made the transaction. |
+| card           | int      | The ID of the card used for the transaction. |
+| year           | int      | The year of the transaction.               |
+| month          | int      | The month of the transaction.              |
+| day            | int      | The day of the transaction.                |
+| time           | time     | The time of the transaction.               |
+| amount         | str      | The amount of the transaction.             |
+| use_chip       | str      | The method used for the transaction.       |
+| merchant_name  | int      | The name of the merchant.                  |
+| merchant_city  | str      | The city of the merchant.                  |
+| merchant_state | str      | The state of the merchant.                 |
+| zip            | float    | The zip code of the merchant.              |
+| mcc            | int      | The Merchant Category Code.                |
+| errors         | str      | Any errors associated with the transaction.|
+| is_fraud       | str      | Whether the transaction is fraudulent.     |
+
+## Test Data
+
+The data used for testing is a subset of the [Credit Card Transactions](https://www.kaggle.com/datasets/ealtman2019/credit-card-transactions) dataset from Kaggle. The subset is located in the `data` directory and contains 1000 transactions, along with the corresponding user and card data.

@@ -7,14 +7,26 @@ import os
 def main():
     # Send a request to the ingestion service
     transaction = {
-        "user_id": 1,
-        "card_id": 1,
-        "amount": 10.0,
-        "description": "e2e test"
+        "user": 1,
+        "card": 1,
+        "year": 2023,
+        "month": 1,
+        "day": 1,
+        "time": "12:00:00",
+        "amount": "$10.00",
+        "use_chip": "Swipe Transaction",
+        "merchant_name": 123456789,
+        "merchant_city": "New York",
+        "merchant_state": "NY",
+        "zip": 10001.0,
+        "mcc": 5411,
+        "errors": "",
+        "is_fraud": "No"
     }
     ingestion_service_host = os.environ.get("INGESTION_SERVICE_HOST", "localhost")
     ingestion_service_port = os.environ.get("INGESTION_SERVICE_PORT", "8000")
     print(f"Sending transaction: {transaction}")
+    time.sleep(5)
     response = requests.post(f"http://{ingestion_service_host}:{ingestion_service_port}/transactions/", json=transaction)
     response.raise_for_status()
     print("Waiting for message to be processed by Kafka...")

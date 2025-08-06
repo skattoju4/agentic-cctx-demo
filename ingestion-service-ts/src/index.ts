@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { Kafka } from 'kafkajs';
+import { Transaction } from '@common/models';
 
 const app = express();
 app.use(express.json());
@@ -13,13 +14,6 @@ const kafka = new Kafka({
 });
 
 const producer = kafka.producer();
-
-interface Transaction {
-    user_id: number;
-    card_id: number;
-    amount: number;
-    description: string;
-}
 
 const transactionRouter = express.Router();
 
