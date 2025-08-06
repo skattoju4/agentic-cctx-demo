@@ -125,6 +125,9 @@ jobs:
       run: |
         chmod +x scripts/get_helm.sh
         ./scripts/get_helm.sh
+    - name: Update Kafka Helm chart dependencies
+      run: |
+        helm dependency update deploy/kafka
     - name: Lint Kafka Helm chart
       run: |
         helm lint deploy/kafka
