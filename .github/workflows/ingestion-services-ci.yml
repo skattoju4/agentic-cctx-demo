@@ -73,7 +73,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build and push the Docker image
       run: |
-        docker build ./ingestion-service-ts --file ./ingestion-service-ts/Dockerfile --tag ghcr.io/${{ github.repository }}/ingestion-service-ts:${{ github.sha }}
+          docker build . --file ./ingestion-service-ts/Dockerfile --tag ghcr.io/${{ github.repository }}/ingestion-service-ts:${{ github.sha }}
         docker push ghcr.io/${{ github.repository }}/ingestion-service-ts:${{ github.sha }}
 
   test-py:
