@@ -1,3 +1,21 @@
+export interface IncomingTransaction {
+    User: number;
+    Card: number;
+    Year: number;
+    Month: number;
+    Day: number;
+    Time: string;
+    Amount: string;
+    'Use Chip': string;
+    'Merchant Name': number;
+    'Merchant City': string;
+    'Merchant State'?: string;
+    Zip?: string;
+    MCC: number;
+    'Errors?'?: string;
+    'Is Fraud?': string;
+}
+
 export interface Transaction {
     user: number;
     card: number;

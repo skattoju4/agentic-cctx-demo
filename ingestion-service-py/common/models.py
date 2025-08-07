@@ -3,6 +3,24 @@ from pydantic import BaseModel
 from typing import Optional
 
 
+class IncomingTransaction(BaseModel):
+    User: int
+    Card: int
+    Year: int
+    Month: int
+    Day: int
+    Time: str
+    Amount: str
+    use_chip: str
+    merchant_id: int
+    merchant_city: str
+    merchant_state: Optional[str] = None
+    Zip: Optional[str] = None
+    MCC: int
+    Errors: Optional[str] = None
+    is_fraud: str
+
+
 class Transaction(BaseModel):
     user: int
     card: int
