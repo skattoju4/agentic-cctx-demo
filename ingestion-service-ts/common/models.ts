@@ -6,14 +6,14 @@ export interface IncomingTransaction {
     Day: number;
     Time: string;
     Amount: string;
-    'Use Chip': string;
-    'Merchant Name': number;
-    'Merchant City': string;
-    'Merchant State'?: string;
-    Zip?: string;
+    "Use Chip": string;
+    "Merchant Name": number;
+    "Merchant City": string;
+    "Merchant State"?: string;
+    "Zip"?: string;
     MCC: number;
-    'Errors?'?: string;
-    'Is Fraud?': string;
+    "Errors?"?: string;
+    "Is Fraud?": string;
 }
 
 export interface Transaction {

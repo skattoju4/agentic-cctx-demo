@@ -15,14 +15,14 @@ def test_create_transaction(mock_kafka_producer):
             "Day": 1,
             "Time": "12:00",
             "Amount": "$10.00",
-            "use_chip": "Swipe Transaction",
-            "merchant_id": 123456789,
-            "merchant_city": "New York",
-            "merchant_state": "NY",
+            "Use Chip": "Swipe Transaction",
+            "Merchant Name": 123456789,
+            "Merchant City": "New York",
+            "Merchant State": "NY",
             "Zip": "10001",
             "MCC": 5411,
-            "Errors": "",
-            "is_fraud": "No"
+            "Errors?": "",
+            "Is Fraud?": "No"
         }
         response = client.post(
             "/transactions/",

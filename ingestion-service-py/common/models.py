@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import Optional
 
 
+from pydantic import Field
+
 class IncomingTransaction(BaseModel):
     User: int
     Card: int
@@ -11,14 +13,14 @@ class IncomingTransaction(BaseModel):
     Day: int
     Time: str
     Amount: str
-    use_chip: str
-    merchant_id: int
-    merchant_city: str
-    merchant_state: Optional[str] = None
-    Zip: Optional[str] = None
-    MCC: int
-    Errors: Optional[str] = None
-    is_fraud: str
+    use_chip: str = Field(..., alias='Use Chip')
+    merchant_name: int = Field(..., alias='Merchant Name')
+    merchant_city: str = Field(..., alias='Merchant City')
+    merchant_state: Optional[str] = Field(None, alias='Merchant State')
+    zip: Optional[str] = Field(None, alias='Zip')
+    mcc: int = Field(..., alias='MCC')
+    errors: Optional[str] = Field(None, alias='Errors?')
+    is_fraud: str = Field(..., alias='Is Fraud?')
 
 
 class Transaction(BaseModel):

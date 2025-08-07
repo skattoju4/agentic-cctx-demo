@@ -28,12 +28,12 @@ def transform_transaction(incoming_transaction: IncomingTransaction) -> Transact
         time=datetime.time(hour, minute),
         amount=amount,
         use_chip=incoming_transaction.use_chip,
-        merchant_id=incoming_transaction.merchant_id,
+        merchant_id=incoming_transaction.merchant_name,
         merchant_city=incoming_transaction.merchant_city,
         merchant_state=incoming_transaction.merchant_state,
-        zip=incoming_transaction.Zip,
-        mcc=incoming_transaction.MCC,
-        errors=incoming_transaction.Errors,
+        zip=incoming_transaction.zip,
+        mcc=incoming_transaction.mcc,
+        errors=incoming_transaction.errors,
         is_fraud=is_fraud
     )
 

@@ -26,14 +26,14 @@ function transformTransaction(incoming: IncomingTransaction): Transaction {
         day: incoming.Day,
         time: incoming.Time,
         amount: parseFloat(incoming.Amount.replace('$', '')),
-        use_chip: incoming['Use Chip'],
-        merchant_id: incoming['Merchant Name'],
-        merchant_city: incoming['Merchant City'],
-        merchant_state: incoming['Merchant State'],
-        zip: incoming.Zip,
+        use_chip: incoming["Use Chip"],
+        merchant_id: incoming["Merchant Name"],
+        merchant_city: incoming["Merchant City"],
+        merchant_state: incoming["Merchant State"],
+        zip: incoming["Zip"],
         mcc: incoming.MCC,
-        errors: incoming['Errors?'],
-        is_fraud: incoming['Is Fraud?'] === 'Yes',
+        errors: incoming["Errors?"],
+        is_fraud: incoming["Is Fraud?"] === 'Yes',
     };
 }
 
