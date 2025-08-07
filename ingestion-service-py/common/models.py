@@ -10,15 +10,15 @@ class Transaction(BaseModel):
     month: int
     day: int
     time: datetime.time
-    amount: str
+    amount: float
     use_chip: str
-    merchant_name: int
+    merchant_id: int
     merchant_city: str
     merchant_state: Optional[str] = None
-    zip: Optional[float] = None
+    zip: Optional[str] = None
     mcc: int
     errors: Optional[str] = None
-    is_fraud: str
+    is_fraud: bool
 
 
 class User(BaseModel):
@@ -32,7 +32,7 @@ class User(BaseModel):
     apartment: Optional[int] = None
     city: str
     state: str
-    zipcode: int
+    zipcode: str
     latitude: float
     longitude: float
     per_capita_income_zipcode: str
@@ -47,7 +47,7 @@ class Card(BaseModel):
     card_index: int
     card_brand: str
     card_type: str
-    card_number: int
+    card_number: str
     expires: str
     cvv: int
     has_chip: str

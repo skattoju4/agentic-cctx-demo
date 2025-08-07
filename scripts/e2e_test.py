@@ -13,15 +13,15 @@ def main():
         "month": 1,
         "day": 1,
         "time": "12:00:00",
-        "amount": "$10.00",
+        "amount": 10.00,
         "use_chip": "Swipe Transaction",
-        "merchant_name": 123456789,
+        "merchant_id": 123456789,
         "merchant_city": "New York",
         "merchant_state": "NY",
-        "zip": 10001.0,
+        "zip": "10001",
         "mcc": 5411,
         "errors": "",
-        "is_fraud": "No"
+        "is_fraud": False
     }
     ingestion_service_host = os.environ.get("INGESTION_SERVICE_HOST", "localhost")
     ingestion_service_port = os.environ.get("INGESTION_SERVICE_PORT", "8000")

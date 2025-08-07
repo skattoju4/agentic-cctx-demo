@@ -118,21 +118,21 @@ The ingestion service and Kafka are deployed to Kubernetes using Helm.
         "month": 1,
         "day": 1,
         "time": "12:00:00",
-        "amount": "$10.00",
+        "amount": 10.00,
         "use_chip": "Swipe Transaction",
-        "merchant_name": 123456789,
+        "merchant_id": 123456789,
         "merchant_city": "New York",
         "merchant_state": "NY",
-        "zip": 10001.0,
+        "zip": "10001",
         "mcc": 5411,
         "errors": "",
-        "is_fraud": "No"
+        "is_fraud": false
     }'
     ```
 
 ## Data Model
 
-The common data model is defined in the `common` directory. It consists of three main entities: `Transaction`, `User`, and `Card`. The models are defined in both Python (`common/models.py`) and TypeScript (`common/models.ts`).
+The common data model is defined in the `ingestion-service-py/common` and `ingestion-service-ts/common` directories. It consists of three main entities: `Transaction`, `User`, and `Card`.
 
 ### Transaction
 
@@ -143,16 +143,16 @@ The common data model is defined in the `common` directory. It consists of three
 | year           | int      | The year of the transaction.               |
 | month          | int      | The month of the transaction.              |
 | day            | int      | The day of the transaction.                |
-| time           | time     | The time of the transaction.               |
-| amount         | str      | The amount of the transaction.             |
+| time           | string   | The time of the transaction (HH:MM:SS).    |
+| amount         | float    | The amount of the transaction.             |
 | use_chip       | str      | The method used for the transaction.       |
-| merchant_name  | int      | The name of the merchant.                  |
+| merchant_id    | int      | The ID of the merchant.                    |
 | merchant_city  | str      | The city of the merchant.                  |
 | merchant_state | str      | The state of the merchant.                 |
-| zip            | float    | The zip code of the merchant.              |
+| zip            | str      | The zip code of the merchant.              |
 | mcc            | int      | The Merchant Category Code.                |
 | errors         | str      | Any errors associated with the transaction.|
-| is_fraud       | str      | Whether the transaction is fraudulent.     |
+| is_fraud       | boolean  | Whether the transaction is fraudulent.     |
 
 ## Test Data
 

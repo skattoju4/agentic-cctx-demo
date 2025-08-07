@@ -5,15 +5,15 @@ export interface Transaction {
     month: number;
     day: number;
     time: string;
-    amount: string;
+    amount: number;
     use_chip: string;
-    merchant_name: number;
+    merchant_id: number;
     merchant_city: string;
     merchant_state?: string;
-    zip?: number;
+    zip?: string;
     mcc: number;
     errors?: string;
-    is_fraud: string;
+    is_fraud: boolean;
 }
 
 export interface User {
@@ -27,7 +27,7 @@ export interface User {
     apartment?: number;
     city: string;
     state: string;
-    zipcode: number;
+    zipcode: string;
     latitude: number;
     longitude: number;
     per_capita_income_zipcode: string;
@@ -42,7 +42,7 @@ export interface Card {
     card_index: number;
     card_brand: string;
     card_type: string;
-    card_number: number;
+    card_number: string;
     expires: string;
     cvv: number;
     has_chip: string;
